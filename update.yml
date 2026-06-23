@@ -1,0 +1,32 @@
+name: Actualizar radar de fondos
+
+on:
+  schedule:
+    - cron: "30 5 * * *"   # cada dia ~07:30 hora peninsular (05:30 UTC)
+  workflow_dispatch: {}      # boton para lanzarlo a mano
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repo
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Ejecutar motor
+        run: python update_funds.py
+
+      - name: Guardar cambios
+        run: |
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add data.json symbols.json
+          git commit -m "Actualizacion diaria $(date -u +%Y-%m-%d)" || echo "Sin cambios"
+          git push
