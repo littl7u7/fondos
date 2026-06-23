@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>Radar de fondos · Mediolanum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0E2233;--ink-2:#16314a;--slate:#5b6b7b;--line:#dbe2e8;--paper:#eef1f4;--card:#fff;
+    --brass:#b0894e;--brass-d:#8c6c39;--emer:#1f8a6d;--red:#c0492f;
+    --gold:#c9a227;--silver:#9aa6b2;--bronze:#b07a43;
+    --shadow:0 1px 2px rgba(14,34,51,.06),0 10px 30px rgba(14,34,51,.07);}
+  *{box-sizing:border-box} html,body{margin:0}
+  body{font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--paper);font-size:14px;line-height:1.45;-webkit-text-size-adjust:100%}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+  header{background:var(--ink);color:#eaf0f5;padding:20px 0 18px}
+  .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .dot{width:11px;height:11px;border-radius:50%;background:var(--brass);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(176,137,78,.55)}70%{box-shadow:0 0 0 9px rgba(176,137,78,0)}100%{box-shadow:0 0 0 0 rgba(176,137,78,0)}}
+  h1{font-size:22px;font-weight:600;margin:0;letter-spacing:-.01em}
+  .updated{margin-left:auto;font:500 12px "IBM Plex Mono";color:#9fb3c4}
+  .sub{color:#9fb3c4;font-size:12.5px;margin-top:8px;max-width:860px}.sub b{color:#dfe9f1}
+  .banner{background:#fbeede;color:#7a4d12;border:1px solid #ecc89a;border-radius:9px;padding:10px 14px;margin:14px auto 0;max-width:1140px;font-size:12.5px}
+  .toolbar{position:sticky;top:0;z-index:6;background:var(--paper);padding:14px 0 10px;border-bottom:1px solid var(--line)}
+  .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.bar+.bar{margin-top:9px}
+  .seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:3px;box-shadow:var(--shadow);flex-wrap:wrap}
+  .seg button{border:0;background:transparent;font:600 12.5px "IBM Plex Sans";color:var(--slate);padding:8px 12px;border-radius:7px;cursor:pointer;white-space:nowrap}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .seg.period button[aria-pressed="true"]{background:var(--brass);color:#1a130a}
+  .seg.vista button[aria-pressed="true"]{background:var(--brass-d);color:#fff}
+  .search{flex:1 1 180px;min-width:140px;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 11px;box-shadow:var(--shadow)}
+  .search input{border:0;outline:0;width:100%;font-size:16px;background:transparent;color:var(--ink)}
+  .search svg{opacity:.5;flex:none}
+  label.tog{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 11px;box-shadow:var(--shadow);cursor:pointer;white-space:nowrap}
+  .board{background:var(--ink-2);border-radius:14px;padding:16px 16px 8px;margin:18px 0 6px;box-shadow:var(--shadow)}
+  .board h2{color:#fff;font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;margin:0 0 12px;display:flex;align-items:center;gap:9px}
+  .board h2 .pill{font:600 11px "IBM Plex Mono";background:var(--brass);color:#1a130a;border-radius:20px;padding:2px 9px;letter-spacing:0}
+  .lead{display:grid;gap:7px}
+  .lrow{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:9px;padding:8px 11px}
+  .lrow .pos{font:600 13px "IBM Plex Mono";color:#9fb3c4;text-align:center}.lrow.top .pos{color:var(--brass)}
+  .lrow .nm{color:#eaf0f5;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lrow .nm small{color:#8ba0b3;font-weight:400}
+  .lrow .val{font:600 14px "IBM Plex Mono";text-align:right;min-width:70px}
+  section.group{margin:22px 0}
+  .ghead{display:flex;align-items:baseline;gap:10px;margin:0 0 10px;border-bottom:2px solid var(--ink);padding-bottom:6px}
+  .ghead h3{font-size:16px;font-weight:600;margin:0}.ghead .cnt{font:500 12px "IBM Plex Mono";color:var(--slate)}
+  .cat{margin:16px 0}.cat .clab{font:700 11px "IBM Plex Sans";letter-spacing:.05em;text-transform:uppercase;color:var(--brass-d);margin:0 0 8px;display:flex;justify-content:space-between}
+  .cat .clab .n{color:var(--slate);font-weight:500}
+  /* podio */
+  .podium{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:9px}
+  .pcard{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--line);border-radius:12px;padding:11px 12px;box-shadow:var(--shadow);position:relative;min-width:0}
+  .pcard.g{border-top-color:var(--gold)}.pcard.s{border-top-color:var(--silver)}.pcard.b{border-top-color:var(--bronze)}
+  .pcard .med{font-size:17px;line-height:1}
+  .pcard .pn{font-weight:600;font-size:12.5px;margin:5px 0 1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pcard .pg{font-size:10.5px;color:var(--brass-d);font-weight:600}
+  .pcard .pr{font:600 19px "IBM Plex Mono";margin-top:5px}
+  .pcard .px{font:500 10px "IBM Plex Mono";color:var(--slate);margin-top:2px}
+  .tbl{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+  .trow{display:grid;grid-template-columns:30px 22px 1fr 86px 70px;align-items:center;gap:9px;padding:9px 12px;border-bottom:1px solid var(--line)}
+  .trow:last-child{border-bottom:0}
+  .trow .rk{font:600 13px "IBM Plex Mono";color:var(--slate);text-align:center}
+  .cmp{width:20px;height:20px;border-radius:6px;border:1px solid var(--line);background:#fff;color:var(--slate);font:600 13px "IBM Plex Mono";cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+  .cmp.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .trow .info{min-width:0}.trow .info .n{font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .trow .info .m{font-size:10.5px;color:var(--slate);margin-top:2px;font-family:"IBM Plex Mono"}
+  .trow .info .m .g{color:var(--brass-d);font-weight:600;font-family:"IBM Plex Sans"}
+  .bar2{height:7px;background:#eef1f4;border-radius:4px;overflow:hidden}.bar2 i{display:block;height:100%;border-radius:4px}
+  .ret{font:600 14px "IBM Plex Mono";text-align:right}.muted{color:#aeb8c1}
+  .tag{display:inline-block;font:600 9px "IBM Plex Mono";border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle}
+  .tag.v{background:#cde8db;color:#0d5c41}.tag.m{background:#e7edf3;color:#274868}
+  .empty{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--slate)}
+  footer{color:var(--slate);font-size:11.5px;margin:30px 0 70px;border-top:1px solid var(--line);padding-top:14px}
+  /* comparador */
+  .tray{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--ink);color:#eaf0f5;transform:translateY(110%);transition:transform .22s ease;box-shadow:0 -10px 30px rgba(14,34,51,.25)}
+  .tray.show{transform:translateY(0)}
+  .tray .inner{max-width:1180px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .tray .chips{display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
+  .chip{background:rgba(255,255,255,.08);border-radius:20px;padding:3px 9px;font-size:11.5px;display:inline-flex;gap:6px;align-items:center}
+  .chip b{font-weight:600}.chip span{cursor:pointer;opacity:.7}
+  .tray button.act{border:0;background:var(--brass);color:#1a130a;font:600 12.5px "IBM Plex Sans";padding:9px 14px;border-radius:8px;cursor:pointer}
+  .tray button.ghost{border:1px solid rgba(255,255,255,.25);background:transparent;color:#cdd9e3;font:600 12px "IBM Plex Sans";padding:9px 12px;border-radius:8px;cursor:pointer}
+  .modal{position:fixed;inset:0;z-index:30;background:rgba(8,18,28,.55);display:none;align-items:center;justify-content:center;padding:18px}
+  .modal.show{display:flex}
+  .sheet{background:var(--paper);border-radius:16px;max-width:920px;width:100%;max-height:92vh;overflow:auto;box-shadow:var(--shadow)}
+  .sheet .sh{position:sticky;top:0;background:var(--ink);color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .sheet .sh h3{margin:0;font-size:15px;font-weight:600;flex:1}
+  .sheet .sh button{border:0;background:rgba(255,255,255,.12);color:#fff;width:30px;height:30px;border-radius:8px;font-size:16px;cursor:pointer}
+  .sheet .body{padding:16px 18px 22px}
+  .chartcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow);margin-bottom:14px}
+  .chartcard h4{margin:0 0 4px;font-size:13px}.chartcard p{margin:0 0 10px;font-size:11.5px;color:var(--slate)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11.5px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  @media(max-width:600px){h1{font-size:18px}.updated{margin-left:0;width:100%}
+    .trow{grid-template-columns:26px 20px 1fr 60px}.bar2,.trow .ret.sec{display:none}
+    .lrow{grid-template-columns:24px 1fr auto}.pcard .pr{font-size:16px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand"><span class="dot"></span><h1>Radar de fondos</h1><span class="updated" id="updated">—</span></div>
+  <p class="sub">Todo el catálogo MiFID de Mediolanum (incl. <b>Challenge, Best Brands y Mediolanum International</b>) ordenado por desempeño <b>semanal · mensual · anual</b>, por tipo de activo o por sector / estilo. Podio 🥇🥈🥉 por categoría, ratios (Sharpe, vol, beta, alfa) y <b>comparador con gráficos</b>. Se actualiza solo cada día; tú no rellenas nada.</p>
+</div></header>
+
+<div class="wrap">
+  <div class="banner" id="banner" style="display:none"></div>
+  <div class="toolbar">
+    <div class="bar">
+      <div class="seg vista" id="vistaSeg">
+        <button data-v="tipo" aria-pressed="true">Por tipo de activo</button>
+        <button data-v="sector" aria-pressed="false">Por sector / estilo</button>
+      </div>
+      <div class="seg period" id="periodSeg">
+        <button data-p="r_1w" aria-pressed="false">Semanal</button>
+        <button data-p="r_1m" aria-pressed="false">Mensual</button>
+        <button data-p="r_3m" aria-pressed="false">3 meses</button>
+        <button data-p="r_ytd" aria-pressed="false">YTD</button>
+        <button data-p="r_1y" aria-pressed="true">Anual</button>
+        <button data-p="r_3y" aria-pressed="false">3 años</button>
+      </div>
+    </div>
+    <div class="bar">
+      <div class="seg tipo" id="tipoSeg">
+        <button data-t="todos" aria-pressed="true">Todos</button>
+        <button data-t="Renta Variable" aria-pressed="false">R. Variable</button>
+        <button data-t="Renta Fija" aria-pressed="false">R. Fija</button>
+        <button data-t="Multiactivo" aria-pressed="false">Multiactivo</button>
+      </div>
+      <label class="tog"><input type="checkbox" id="bySharpe"> Ordenar por Sharpe</label>
+      <label class="tog"><input type="checkbox" id="onlyMed"> Solo Mediolanum</label>
+      <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="q" type="search" placeholder="Buscar…" autocomplete="off"></div>
+    </div>
+  </div>
+
+  <div class="board"><h2>Top del periodo <span class="pill" id="boardPeriod">Anual</span></h2><div class="lead" id="board"></div></div>
+  <div id="content"></div>
+
+  <footer>
+    Fuente: <span id="src">—</span>. Beta y alfa (3A) frente al índice de cada clase (RV/Multiactivo: MSCI ACWI · R. Fija: Global Aggregate). Gráfico de evolución: precio semanal normalizado base 100 (último año). Desempeños orientativos: <b>verifica en la ficha oficial o Morningstar</b> y confirma la clase/ISIN en Mediolanum. Soporte de análisis, no asesoramiento (MiFID II). Rentabilidades pasadas no garantizan resultados futuros. <span id="note"></span>
+  </footer>
+</div>
+
+<div class="tray" id="tray"><div class="inner">
+  <div class="chips" id="chips"></div>
+  <button class="ghost" id="clearCmp">Vaciar</button>
+  <button class="act" id="openCmp">Comparar gráficos</button>
+</div></div>
+
+<div class="modal" id="modal"><div class="sheet">
+  <div class="sh"><h3 id="modalTitle">Comparador</h3><button id="closeCmp">✕</button></div>
+  <div class="body" id="modalBody"></div>
+</div></div>
+
+<script>
+const SEED={"updated":null,"status":"seed","source":"semilla local","totalCatalog":209,
+ "note":"Datos semilla: solo verificados (may-jun 2026). Despliega el repo y el motor diario rellena todo el catálogo (incl. las curvas del comparador).",
+ "funds":[
+  {"id":"a","name":"Robeco BP Global Premium Equities","gestora":"Robeco","tipo":"Renta Variable","categoria":"RV Internacional","sectores":["Internacional / Global","Value"],"propio":false,"r_1w":null,"r_1m":null,"r_3m":null,"r_ytd":null,"r_1y":21.3,"r_3y":null,"vol_1y":null,"sharpe_1y":null,"beta":null,"alpha":null,"series":[],"verified":true},
+  {"id":"b","name":"Carmignac Securite","gestora":"Carmignac","tipo":"Renta Fija","categoria":"RF Diversificada","sectores":["RF diversificada"],"propio":false,"r_1w":null,"r_1m":null,"r_3m":null,"r_ytd":null,"r_1y":1.4,"r_3y":3.8,"vol_1y":1.3,"sharpe_1y":0.7,"beta":null,"alpha":null,"series":[],"verified":true},
+  {"id":"c","name":"Carmignac Portfolio Credit","gestora":"Carmignac","tipo":"Renta Fija","categoria":"RF Flexible","sectores":["RF flexible"],"propio":false,"r_1w":null,"r_1m":null,"r_3m":null,"r_ytd":null,"r_1y":5.1,"r_3y":8.2,"vol_1y":2.7,"sharpe_1y":1.8,"beta":null,"alpha":null,"series":[],"verified":true},
+  {"id":"d","name":"Carmignac Patrimoine","gestora":"Carmignac","tipo":"Multiactivo","categoria":"Multiactivo Flexible","sectores":["Mixto flexible"],"propio":false,"r_1w":null,"r_1m":null,"r_3m":null,"r_ytd":null,"r_1y":9.1,"r_3y":8.1,"vol_1y":null,"sharpe_1y":null,"beta":null,"alpha":null,"series":[],"verified":true}
+ ]};
+
+const LABEL={"Tecnologia":"Tecnología","EE. UU. / Norteamerica":"EE. UU. / Norteamérica","Asia / Pacifico":"Asia / Pacífico",
+ "Economia circular":"Economía circular","Recursos naturales y energia":"Recursos naturales y energía",
+ "Credito corporativo":"Crédito corporativo","Deuda publica":"Deuda pública","Mixto dinamico":"Mixto dinámico"};
+const lab=s=>LABEL[s]||s;
+const SECTOR_ORDER=["Tecnologia","Salud","Materias primas y oro","Recursos naturales y energia","Industria y materiales",
+ "Financiero","Consumo y lujo","Infraestructuras","Inmobiliario","Agua y medioambiente","Economia circular",
+ "Internacional / Global","EE. UU. / Norteamerica","Europa","Asia / Pacifico","Mercados emergentes","Dividendos","Value",
+ "High yield","Credito corporativo","Deuda publica","RF flexible","RF diversificada","Convertibles","Deuda emergente","Monetario / corto plazo",
+ "Mixto flexible","Mixto prudente","Mixto dinamico","Retorno absoluto / alternativos"];
+const PAL=["#0E2233","#b0894e","#1f8a6d","#c0492f","#3a6ea5","#7a4d9e","#107a74","#a8631f"];
+
+let DATA=SEED, period="r_1y", tipo="todos", vista="tipo", bySharpe=false, onlyMed=false, query="";
+let CMP=[]; const byId={};
+const PLABEL={r_1w:"Semanal",r_1m:"Mensual",r_3m:"3 meses",r_ytd:"YTD",r_1y:"Anual",r_3y:"3 años"};
+const col=v=>v==null?"var(--slate)":(v>=0?"var(--emer)":"var(--red)");
+const clean=n=>n.replace(/“|”/g,'');
+const fmt=v=>v==null?"—":(v>0?"+":"")+v.toFixed(bySharpe?2:1);
+const metric=x=>bySharpe?x.sharpe_1y:x[period];
+
+function base(){
+  return DATA.funds.filter(x=>{
+    if(tipo!=="todos"&&x.tipo!==tipo) return false;
+    if(onlyMed&&!x.propio) return false;
+    if(query){const s=(x.name+" "+x.gestora+" "+(x.categoria||"")+" "+(x.sectores||[]).join(" ")).toLowerCase(); if(!s.includes(query.toLowerCase())) return false;}
+    return true;
+  });
+}
+let _mx=1;
+function metaLine(x){
+  const m=['<span class="g">'+x.gestora+'</span>'];
+  if(x.sharpe_1y!=null&&!bySharpe) m.push("Sharpe "+x.sharpe_1y);
+  if(x.vol_1y!=null) m.push("Vol "+x.vol_1y+"%");
+  if(x.beta!=null) m.push("β "+x.beta);
+  if(x.alpha!=null) m.push("α "+(x.alpha>0?"+":"")+x.alpha);
+  return m.join(" · ");
+}
+function cmpBtn(x){ return '<button class="cmp'+(CMP.includes(x.id)?' on':'')+'" data-cmp="'+x.id+'" title="Comparar">'+(CMP.includes(x.id)?'✓':'+')+'</button>'; }
+
+function podium(list){
+  const top=list.slice(0,3), cls=["g","s","b"], med=["🥇","🥈","🥉"], suf=bySharpe?"":"%";
+  let h='<div class="podium">';
+  for(let i=0;i<3;i++){
+    const x=top[i];
+    if(!x){h+='<div class="pcard"></div>';continue;}
+    const v=metric(x);
+    h+='<div class="pcard '+cls[i]+'"><div class="med">'+med[i]+'</div>'+
+       '<div class="pn">'+clean(x.name)+'</div><div class="pg">'+x.gestora+'</div>'+
+       '<div class="pr" style="color:'+col(v)+'">'+(v==null?"—":fmt(v)+suf)+'</div>'+
+       '<div class="px">'+(x.sharpe_1y!=null?"Sharpe "+x.sharpe_1y+" · ":"")+(x.vol_1y!=null?"Vol "+x.vol_1y+"%":"")+'</div></div>';
+  }
+  return h+'</div>';
+}
+function rowEl(x,i){
+  const v=metric(x), has=v!=null, suf=bySharpe?"":"%";
+  const r=document.createElement("div"); r.className="trow";
+  r.innerHTML='<div class="rk">'+(i+1)+'</div>'+cmpBtn(x)+
+    '<div class="info"><div class="n">'+clean(x.name)+(x.verified?'<span class="tag v">VERIF</span>':'')+(x.propio?'<span class="tag m">MED</span>':'')+'</div><div class="m">'+metaLine(x)+'</div></div>'+
+    '<div class="bar2"><i style="width:'+(has?Math.max(4,Math.abs(v)/_mx*100):0)+'%;background:'+col(v)+'"></i></div>'+
+    '<div class="ret" style="color:'+(has?col(v):'var(--slate)')+'">'+(has?fmt(v)+suf:'<span class="muted">—</span>')+'</div>';
+  return r;
+}
+function block(title,list){
+  list.sort((a,b)=>{const A=metric(a),B=metric(b);return (B==null?-1e9:B)-(A==null?-1e9:A);});
+  _mx=Math.max(1,...list.map(x=>Math.abs(metric(x)||0)));
+  const cdiv=document.createElement("div"); cdiv.className="cat";
+  cdiv.innerHTML='<p class="clab"><span>'+title+'</span><span class="n">'+list.length+' fondos</span></p>';
+  if(list.some(x=>metric(x)!=null)) cdiv.insertAdjacentHTML("beforeend", podium(list));
+  if(list.length>3){
+    const tbl=document.createElement("div"); tbl.className="tbl";
+    list.slice(3).forEach((x,i)=>tbl.appendChild(rowEl(x,i+3)));
+    cdiv.appendChild(tbl);
+  }
+  return cdiv;
+}
+function render(){
+  document.getElementById("updated").textContent=DATA.updated?("actualizado "+DATA.updated):"sin desplegar";
+  document.getElementById("src").textContent=DATA.source||"—";
+  document.getElementById("note").textContent=DATA.note?(" · "+DATA.note):"";
+  document.getElementById("boardPeriod").textContent=bySharpe?"Sharpe 1A":PLABEL[period];
+  const banner=document.getElementById("banner");
+  if(DATA.status==="seed"){banner.style.display="block";banner.innerHTML="<b>Aún sin desplegar.</b> Mostrando solo los fondos verificados. Sigue el README para publicarlo y se actualizará solo cada día con los "+(DATA.totalCatalog||"~200")+" fondos del catálogo.";}
+  else banner.style.display="none";
+
+  DATA.funds.forEach(f=>byId[f.id]=f);
+  const funds=base();
+  const wv=funds.filter(x=>metric(x)!=null).sort((a,b)=>metric(b)-metric(a));
+  const board=document.getElementById("board");
+  if(!wv.length){board.innerHTML='<div class="lrow"><div></div><div class="nm muted">Sin datos para este periodo todavía.</div><div></div></div>';}
+  else{board.innerHTML="";wv.slice(0,12).forEach((x,i)=>{const v=metric(x),suf=bySharpe?"":"%";
+    const row=document.createElement("div");row.className="lrow"+(i<3?" top":"");
+    row.innerHTML='<div class="pos">'+(i+1)+'</div><div class="nm">'+clean(x.name)+' <small>· '+x.gestora+'</small></div><div class="val" style="color:'+col(v)+'">'+fmt(v)+suf+'</div>';
+    board.appendChild(row);});}
+
+  const content=document.getElementById("content"); content.innerHTML=""; let any=false;
+  if(vista==="tipo"){
+    const tipos=tipo==="todos"?["Renta Variable","Renta Fija","Multiactivo"]:[tipo];
+    tipos.forEach(tp=>{
+      const inTp=funds.filter(x=>x.tipo===tp); if(!inTp.length) return; any=true;
+      const sec=document.createElement("section");sec.className="group";
+      sec.innerHTML='<div class="ghead"><h3>'+tp+'</h3><span class="cnt">'+inTp.length+' fondos</span></div>';
+      [...new Set(inTp.map(x=>x.categoria))].forEach(c=>sec.appendChild(block(c.replace(/^RV |^RF /,""), inTp.filter(x=>x.categoria===c))));
+      content.appendChild(sec);
+    });
+  } else {
+    const sec=document.createElement("section");sec.className="group";
+    sec.innerHTML='<div class="ghead"><h3>Por sector / estilo</h3><span class="cnt">un fondo puede aparecer en varios</span></div>';
+    let printed=false;
+    SECTOR_ORDER.forEach(s=>{const list=funds.filter(x=>(x.sectores||[]).includes(s)); if(!list.length) return; sec.appendChild(block(lab(s),list)); printed=true; any=true;});
+    const known=new Set(SECTOR_ORDER);
+    [...new Set(funds.flatMap(x=>x.sectores||[]).filter(s=>!known.has(s)))].forEach(s=>{const list=funds.filter(x=>(x.sectores||[]).includes(s)); if(list.length){sec.appendChild(block(lab(s),list));any=true;}});
+    if(printed) content.appendChild(sec);
+  }
+  if(!any) content.innerHTML='<div class="empty">No hay fondos con este filtro. Cambia de periodo/tipo o despliega el repo para que el motor rellene los datos.</div>';
+  renderTray();
+}
+
+/* ---------- comparador ---------- */
+function renderTray(){
+  const tray=document.getElementById("tray"), chips=document.getElementById("chips");
+  if(!CMP.length){tray.classList.remove("show");return;}
+  tray.classList.add("show");
+  chips.innerHTML=CMP.map(id=>{const f=byId[id];return f?'<span class="chip"><b>'+clean(f.name).slice(0,28)+'</b><span data-rm="'+id+'">✕</span></span>':'';}).join("");
+}
+function toggleCmp(id){
+  const i=CMP.indexOf(id);
+  if(i>=0) CMP.splice(i,1);
+  else{ if(CMP.length>=6){alert("Máximo 6 fondos para comparar.");return;} CMP.push(id); }
+  render();
+}
+function svgLines(funds){
+  const W=860,H=300,padL=42,padR=12,padT=14,padB=26;
+  const withS=funds.filter(f=>f.series&&f.series.length>3);
+  if(!withS.length) return '<p class="muted">Las curvas de evolución se rellenan al desplegar el repo (aún no hay histórico en la semilla).</p>';
+  let lo=Infinity,hi=-Infinity,maxLen=0;
+  withS.forEach(f=>{f.series.forEach(v=>{lo=Math.min(lo,v);hi=Math.max(hi,v);});maxLen=Math.max(maxLen,f.series.length);});
+  const pad=(hi-lo)*0.08||1; lo-=pad; hi+=pad;
+  const X=i=>padL+(maxLen<2?0:i/(maxLen-1))*(W-padL-padR);
+  const Y=v=>padT+(1-(v-lo)/(hi-lo))*(H-padT-padB);
+  let g='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">';
+  for(let k=0;k<=4;k++){const val=lo+(hi-lo)*k/4;const y=Y(val);
+    g+='<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="#e4e9ee"/>'+
+       '<text x="'+(padL-6)+'" y="'+(y+3)+'" text-anchor="end" font-size="9" font-family="IBM Plex Mono" fill="#9aa6b2">'+val.toFixed(0)+'</text>';}
+  const y100=Y(100); g+='<line x1="'+padL+'" y1="'+y100+'" x2="'+(W-padR)+'" y2="'+y100+'" stroke="#b0894e" stroke-dasharray="3 3" opacity=".6"/>';
+  withS.forEach((f,idx)=>{const c=PAL[idx%PAL.length];
+    const pts=f.series.map((v,i)=>X(i)+","+Y(v)).join(" ");
+    g+='<polyline points="'+pts+'" fill="none" stroke="'+c+'" stroke-width="2"/>';});
+  g+='</svg>';
+  let leg='<div class="legend">'+withS.map((f,idx)=>{const last=f.series[f.series.length-1];const ch=(last-100);
+    return '<span><i style="background:'+PAL[idx%PAL.length]+'"></i>'+clean(f.name).slice(0,30)+' <b style="color:'+col(ch)+'">'+(ch>0?"+":"")+ch.toFixed(1)+'%</b></span>';}).join("")+'</div>';
+  return g+leg;
+}
+function svgBars(funds){
+  const periods=[["r_1w","Sem"],["r_1m","Mes"],["r_ytd","YTD"],["r_1y","Año"]];
+  const W=860,H=260,padL=34,padR=10,padT=12,padB=30;
+  let lo=0,hi=0;
+  funds.forEach(f=>periods.forEach(p=>{const v=f[p[0]];if(v!=null){lo=Math.min(lo,v);hi=Math.max(hi,v);}}));
+  if(lo===0&&hi===0) return '<p class="muted">Sin datos de rentabilidad por periodo todavía.</p>';
+  const pad=(hi-lo)*0.1||1; hi+=pad; lo-=pad;
+  const gW=(W-padL-padR)/periods.length;
+  const bw=Math.min(26,(gW-14)/funds.length);
+  const Y=v=>padT+(1-(v-lo)/(hi-lo))*(H-padT-padB);
+  let g='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">';
+  const y0=Y(0); g+='<line x1="'+padL+'" y1="'+y0+'" x2="'+(W-padR)+'" y2="'+y0+'" stroke="#c2ccd5"/>';
+  periods.forEach((p,pi)=>{
+    const gx=padL+pi*gW+gW/2;
+    g+='<text x="'+gx+'" y="'+(H-10)+'" text-anchor="middle" font-size="10" font-family="IBM Plex Sans" fill="#5b6b7b">'+p[1]+'</text>';
+    funds.forEach((f,fi)=>{const v=f[p[0]];if(v==null)return;
+      const x=padL+pi*gW+gW/2-(funds.length*bw)/2+fi*bw;
+      const y=Y(v),yy=Math.min(y,y0),hh=Math.abs(y-y0);
+      g+='<rect x="'+x+'" y="'+yy+'" width="'+(bw-2)+'" height="'+hh+'" rx="2" fill="'+PAL[fi%PAL.length]+'"><title>'+clean(f.name)+': '+(v>0?"+":"")+v+'%</title></rect>';});
+  });
+  g+='</svg>';
+  let leg='<div class="legend">'+funds.map((f,fi)=>'<span><i style="background:'+PAL[fi%PAL.length]+'"></i>'+clean(f.name).slice(0,30)+'</span>').join("")+'</div>';
+  return g+leg;
+}
+function openModal(){
+  if(!CMP.length) return;
+  const funds=CMP.map(id=>byId[id]).filter(Boolean);
+  document.getElementById("modalTitle").textContent="Comparador · "+funds.length+" fondos";
+  document.getElementById("modalBody").innerHTML=
+    '<div class="chartcard"><h4>Evolución (base 100, último año)</h4><p>Crecimiento de 100 € invertidos. La línea de puntos marca el punto de partida.</p>'+svgLines(funds)+'</div>'+
+    '<div class="chartcard"><h4>Rentabilidad por periodo</h4><p>Semanal · Mensual · YTD · Anual.</p>'+svgBars(funds)+'</div>';
+  document.getElementById("modal").classList.add("show");
+}
+
+document.getElementById("vistaSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;vista=b.dataset.v;[...e.currentTarget.children].forEach(c=>c.setAttribute("aria-pressed",c===b));render();};
+document.getElementById("periodSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;period=b.dataset.p;[...e.currentTarget.children].forEach(c=>c.setAttribute("aria-pressed",c===b));render();};
+document.getElementById("tipoSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;tipo=b.dataset.t;[...e.currentTarget.children].forEach(c=>c.setAttribute("aria-pressed",c===b));render();};
+document.getElementById("bySharpe").onchange=e=>{bySharpe=e.target.checked;render();};
+document.getElementById("onlyMed").onchange=e=>{onlyMed=e.target.checked;render();};
+document.getElementById("q").oninput=e=>{query=e.target.value;render();};
+document.getElementById("content").addEventListener("click",e=>{const b=e.target.closest("[data-cmp]");if(b)toggleCmp(b.dataset.cmp);});
+document.getElementById("chips").addEventListener("click",e=>{const s=e.target.closest("[data-rm]");if(s)toggleCmp(s.dataset.rm);});
+document.getElementById("clearCmp").onclick=()=>{CMP=[];render();};
+document.getElementById("openCmp").onclick=openModal;
+document.getElementById("closeCmp").onclick=()=>document.getElementById("modal").classList.remove("show");
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")e.currentTarget.classList.remove("show");});
+
+fetch("./data.json?ts="+Date.now()).then(r=>{if(!r.ok)throw 0;return r.json();})
+  .then(d=>{if(d&&d.funds&&d.funds.length){DATA=d;}render();}).catch(()=>render());
+</script>
+</body>
+</html>
