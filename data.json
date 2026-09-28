@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-27",
+ "updated": "2026-09-28",
  "status": "ok",
  "resolved": 92,
  "total": 209,
@@ -8143,7 +8143,7 @@
    "vol_1y": 2.58,
    "sharpe_1y": -0.97,
    "beta": 0.4,
-   "alpha": 1.86,
+   "alpha": 1.9,
    "series": [
     100.0,
     100.1,
